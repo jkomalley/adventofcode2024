@@ -1,28 +1,34 @@
+from pathlib import Path
+
+
+def _inc_within_diff(report: list[int]):
+    return all(
+        report[i] <= report[i + 1] and 1 <= report[i + 1] - report[i] <= 3
+        for i in range(len(report) - 1)
+    )
+
+
+def _dec_within_diff(report: list[int]):
+    return all(
+        report[i] >= report[i + 1] and 1 <= report[i] - report[i + 1] <= 3
+        for i in range(len(report) - 1)
+    )
+
+
 def main():
-    with open("input.txt") as input:
-        file = input.read()
+    input_path = Path("input.txt")
+    safe_count = 0
 
-    total = 0
+    with input_path.open() as input_file:
+        for line in input_file.readlines():
+            report = [int(level) for level in line.split()]
 
-    for line in file.splitlines():
-        safe = True
-        report = [int(value) for value in line.split()]
+            is_safe = _inc_within_diff(report) or _dec_within_diff(report)
 
-        print(f"{report=}")
+            if is_safe:
+                safe_count += 1
 
-        if report[0] < report[1]:
-            for i in range(1, len(report) - 1):
-                if report[i] > report[i+1]:
-                    safe = False
-        else:
-            for i in range(1, len(report) - 1):
-                if report[i] < report[i+1]:
-                    safe = False
-        
-        if safe:
-            total += 1
-
-    print(total)
+    print(f"{safe_count=}")
 
 
 if __name__ == "__main__":
